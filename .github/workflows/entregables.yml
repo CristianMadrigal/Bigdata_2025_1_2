@@ -6,10 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  
-    strategy:
-      matrix:
-        python-version: [ "3.9", "3.10", "3.11" ] 
+    runs-on: windows-latest
     permissions:
       contents: write
 
@@ -17,32 +14,28 @@ jobs:
       - name: Paso 1 - Checkout Repositorio
         uses: actions/checkout@v4
 
-      - name: Paso 2 - Setup Python ${{ matrix.python-version }}
+      - name: Paso 2 - Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }} 
+          python-version: '3.9.2'
 
-      - name: Paso 3 - Crear e instalar entorno virtual
+      - name: Paso 3 - Crear entorno virtual
+        run: python -m venv venv
+
+      - name: Paso 4 - Activar entorno virtual
+        run: .\\venv\\Scripts\\activate
+
+      - name: Paso 5 - Instalar dependencias
         run: |
-          python -m venv venv
-          source venv/bin/activate  # Activación para Ubuntu
-          pip install --upgrade pip
-          pip install -r requirements.txt  # Instala las dependencias del proyecto
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  
 
-      - name: Paso 4 - Ejecutar Script y Generar DB
-        run: |
-          python src/main.py habitantes.csv  # Ejecuta tu script
-          # Opcional:  Verificar si la base de datos se creó
-          if [ -f "habitantes_de_calle.db" ]; then
-            echo "Base de datos creada exitosamente."
-          else
-            echo "Error: No se creó la base de datos."
-            exit 1  #  <---  Esto hace que la Action falle si no se crea la DB
-          fi
+      - name: Paso 6 - Ejecutar Script
+        run: python src/main.py habitantes.csv  
 
-      - name: Paso 5 - Subir base de datos como artefacto
+      - name: Paso 7 - Subir base de datos como artefacto
         uses: actions/upload-artifact@v3
         with:
           name: database
-          path: habitantes_de_calle.db  # Ruta a tu base de datos SQLite
-        if: success()  # Solo si el paso anterior fue exitoso
+          path: habitantes_de_calle.db
+        if: success()
