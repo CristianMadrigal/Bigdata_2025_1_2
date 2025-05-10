@@ -34,7 +34,7 @@ jobs:
         run: python src/edu_bigdata/main.py habitantes.csv
 
       - name: Paso 7 - Subir base de datos como artefacto
-        uses: actions/upload-artifact@v3 #  <---  Posible solución: Intenta con v4
+        uses: actions/upload-artifact@v4 #  
         with:
           name: database
           path: src/edu_bigdata/static/db/habitantes_de_calle.db
