@@ -35,7 +35,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Paso 6 - Ejecutar Script
-        run: python src/edu_bigdata/main.py habitantes.csv
+        run: python -m src.edu_bigdata.main habitantes.csv
 
       - name: Debug - List files before upload
         run: ls -la src/edu_bigdata/static/db/  # Añadido para debug
