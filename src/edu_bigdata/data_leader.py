@@ -1,10 +1,12 @@
 import pandas as pd
 import logging
-from src.database import obtener_conexion, DB_PATH  
+import sqlite3
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def cargar_datos_desde_csv(csv_file):
     try:
-        conn = obtener_conexion()  
+        conn = sqlite3.connect('src/edu_bigdata/static/db/habitantes_de_calle.db')  # Ruta a la base de datos
         df = pd.read_csv(csv_file, encoding='utf-8')
         df.to_sql('HabitanteDeCalle', conn, if_exists='replace', index=False)
         conn.close()

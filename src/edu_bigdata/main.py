@@ -1,7 +1,6 @@
 import argparse
 import logging
-from src.database import crear_tabla_habitante, obtener_conexion  
-from src.data_loader import cargar_datos_desde_csv
+from .data_leader import cargar_datos_desde_csv  # Importa la función
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -10,16 +9,7 @@ def main():
     parser.add_argument("csv_file", help="Ruta al archivo CSV.")
     args = parser.parse_args()
 
-    crear_tabla_habitante()  
-    cargar_datos_desde_csv(args.csv_file)  
-
-    
-    conn = obtener_conexion()
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM HabitanteDeCalle")
-    cantidad = cursor.fetchone()[0]
-    logging.info(f"Total de habitantes de calle: {cantidad}")
-    conn.close()
+    cargar_datos_desde_csv(args.csv_file)  # Llama a la función
 
 if __name__ == "__main__":
     main()
