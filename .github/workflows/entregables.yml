@@ -6,7 +6,10 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11" ] 
     permissions:
       contents: write
 
@@ -14,17 +17,32 @@ jobs:
       - name: Paso 1 - Checkout Repositorio
         uses: actions/checkout@v4
 
-      - name: Paso 2 - Setup Python
+      - name: Paso 2 - Setup Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9.2'
+          python-version: ${{ matrix.python-version }} 
 
-      - name: Paso 3 - Crear entorno virtual
-        run: python -m venv venv
+      - name: Paso 3 - Crear e instalar entorno virtual
+        run: |
+          python -m venv venv
+          source venv/bin/activate  # Activación para Ubuntu
+          pip install --upgrade pip
+          pip install -r requirements.txt  # Instala las dependencias del proyecto
 
-      - name: Paso 4 - Activar entorno virtual
-        run: .\\venv\\Scripts\\activate
+      - name: Paso 4 - Ejecutar Script y Generar DB
+        run: |
+          python src/main.py habitantes.csv  # Ejecuta tu script
+          # Opcional:  Verificar si la base de datos se creó
+          if [ -f "habitantes_de_calle.db" ]; then
+            echo "Base de datos creada exitosamente."
+          else
+            echo "Error: No se creó la base de datos."
+            exit 1  #  <---  Esto hace que la Action falle si no se crea la DB
+          fi
 
-      - name: Paso 5 - Ejecutar Script
-        run: python main.py
-
+      - name: Paso 5 - Subir base de datos como artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: database
+          path: habitantes_de_calle.db  # Ruta a tu base de datos SQLite
+        if: success()  # Solo si el paso anterior fue exitoso
