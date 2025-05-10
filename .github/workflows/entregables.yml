@@ -22,11 +22,8 @@ jobs:
       - name: Paso 3 - Crear entorno virtual
         run: python -m venv venv
 
-      - name: Paso 4 - Activar entorno virtual
-        if: runner.os == 'Windows'
-        run: .\\venv\\Scripts\\activate
-      - name: Paso 4 - Activar entorno virtual (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Paso 4 - Activar entorno virtual (Ubuntu)
+        if: runner.os == 'Linux'
         run: source venv/bin/activate
 
       - name: Paso 5 - Instalar dependencias
@@ -34,14 +31,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Paso 5.1 - Verificar pandas (Debug)
+        run: python -c "import pandas"
+
       - name: Paso 6 - Ejecutar Script
-        run: python -m src.edu_bigdata.main habitantes.csv
+        run: python -m src/edu_bigdata/main.py habitantes.csv
 
       - name: Debug - List files before upload
-        run: ls -la src/edu_bigdata/static/db/  # Añadido para debug
+        run: ls -la src/edu_bigdata/static/db/
 
       - name: Paso 7 - Subir base de datos como artefacto
-        uses: actions/upload-artifact@v4  # Intenta con v4
+        uses: actions/upload-artifact@v4
         with:
           name: database
           path: src/edu_bigdata/static/db/habitantes_de_calle.db
