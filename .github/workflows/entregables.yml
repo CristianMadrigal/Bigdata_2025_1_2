@@ -10,39 +10,39 @@ jobs:
     permissions:
       contents: write
 
-    steps:
-      - name: Paso 1 - Checkout Repositorio
-        uses: actions/checkout@v4
+  steps:
+    - name: Paso 1 - Checkout Repositorio
+      uses: actions/checkout@v4
 
-      - name: Paso 2 - Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
+    - name: Paso 2 - Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
 
-      - name: Paso 3 - Crear entorno virtual
-        run: python -m venv venv
+    - name: Paso 3 - Crear entorno virtual
+      run: python -m venv venv
 
-      - name: Paso 4 - Activar entorno virtual (Ubuntu)
-        if: runner.os == 'Linux'
-        run: source venv/bin/activate
+    - name: Paso 4 - Activar entorno virtual (Ubuntu)
+      if: runner.os == 'Linux'
+      run: source venv/bin/activate
 
-      - name: Paso 5 - Instalar dependencias
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Paso 5 - Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Paso 5.1 - Verificar pandas (Debug)
-        run: python -c "import pandas"
+    - name: Paso 5.1 - Crear directorio de base de datos
+      run: mkdir -p src/edu_bigdata/static/db/
 
-      - name: Paso 6 - Ejecutar Script
-        run: python -m src.edu_bigdata.main habitantes.csv
+    - name: Paso 6 - Ejecutar Script
+      run: python -m src/edu_bigdata/main.py habitantes.csv
 
-      - name: Debug - List files before upload
-        run: ls -la src/edu_bigdata/static/db/
+    - name: Debug - List files before upload
+      run: ls -la src/edu_bigdata/static/db/
 
-      - name: Paso 7 - Subir base de datos como artefacto
-        uses: actions/upload-artifact@v4
-        with:
-          name: database
-          path: src/edu_bigdata/static/db/habitantes_de_calle.db
-        if: success()
+    - name: Paso 7 - Subir base de datos como artefacto
+      uses: actions/upload-artifact@v4
+      with:
+        name: database
+        path: src/edu_bigdata/static/db/habitantes_de_calle.db
+      if: success()
